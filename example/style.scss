@@ -1,0 +1,32 @@
+@import 'style.dependency.scss';
+
+// Bool values
+$bool: true;
+
+// Colors
+$color: red;
+$color2: rgba(10,10,10,1);
+$color3: #FFF;
+
+// Numbers
+$number: 1;;
+$ms: 500ms;
+$sec: 10s;
+
+// Null
+$null: null;
+
+// Strings
+$string: "";
+
+// Data Structures
+$map: (key: 2, key2: true);
+$list: (1,2,3);
+
+// Variables depending on imports
+$dependency_var_alias: $dependency_var;
+
+// Normal selectors don't have any effect
+.index {
+  color: $color;
+}
