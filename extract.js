@@ -122,14 +122,18 @@ function SassVariablesExtract(file, sass) {
     const variables = {};
     const dependencies = [];
 
-    const transformedSass = transformSASSFile(sass)
-    const importer = (url, prev, done) => importSASSFile(file, dependencies, url, prev);
-    const export_var = (name, value) => exportSASSValue(variables, name, value);
-    const functions = { export_var: export_var };
-    return parseSASS(transformedSass, importer, functions)
-      .then(() => {
-        return { variables: variables, dependencies: dependencies };
-      })
+    try {
+      const transformedSass = transformSASSFile(sass)
+      const importer = (url, prev, done) => importSASSFile(file, dependencies, url, prev);
+      const export_var = (name, value) => exportSASSValue(variables, name, value);
+      const functions = { export_var: export_var };
+      return parseSASS(transformedSass, importer, functions)
+        .then(() => {
+          return { variables: variables, dependencies: dependencies };
+        })
+    } catch(e) {
+      return Promise.reject(e)
+    }
 }
 
 module.exports = SassVariablesExtract;
