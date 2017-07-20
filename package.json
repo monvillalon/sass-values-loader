@@ -1,13 +1,13 @@
 {
   "name": "sass-values-loader",
-  "version": "1.0.1",
+  "version": "1.0.3",
   "main": "index.js",
   "license": "MIT",
   "dependencies": {
     "fs-extra": "^3.0.1",
     "loader-utils": "^1.1.0",
+    "lodash.foreach": "^4.5.0",
     "lodash.isarray": "^4.0.0",
-    "lodash.foreach": "^4.0.0",
     "query-ast": "^1.0.1",
     "scss-parser": "^1.0.0"
   },
