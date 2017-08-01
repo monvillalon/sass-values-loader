@@ -27,7 +27,7 @@ module.exports = function(content) {
           const constExport = JSON.stringify(value)
                            .replace(/\u2028/g, '\\u2028')
                            .replace(/\u2029/g, '\\u2029');
-          module += `export const ${name} = ${constExport}\n`;
+          module += `export var ${name} = ${constExport}\n`;
         })
         module += `export default ${defaultExport}\n`
       } else {
