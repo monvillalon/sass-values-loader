@@ -6,8 +6,10 @@
   "dependencies": {
     "fs-extra": "^3.0.1",
     "loader-utils": "^1.1.0",
+    "lodash.camelcase": "^4.3.0",
     "lodash.foreach": "^4.5.0",
     "lodash.isarray": "^4.0.0",
+    "lodash.mapkeys": "^4.6.0",
     "query-ast": "^1.0.1",
     "scss-parser": "^1.0.0"
   },

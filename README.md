@@ -57,6 +57,27 @@ console.log(vars.sec) // 10
 console.log(styles.a) // The css modules classname
 ```
 
+### Options
+
+`preserveKeys` (boolean, defaults to `false`)
+
+Variable names are converted to camelCase by default, but can be preserved in their original format with this setting.
+
+```scss
+$some-time: 500ms,
+```
+
+```js
+import styles from './style.scss';
+import camelCasedVars from "!!sass-values-loader!./style.scss";
+import preservedVars from "!!sass-values-loader?preserveKeys=true!./style.scss";
+
+console.log(camelCasedVars) // { someTime: 500 }
+console.log(preservedVars) // { 'some-time': 500 }
+```
+
+### Cleaner loader syntax
+
 To shorten the import or require statement you can add the following snippet to the root of your webpack configuration:
 
 ```js
