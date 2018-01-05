@@ -27,7 +27,7 @@ $list: (1,2,3);
 $number: 1;
 $map: (key: 2, key2: true);
 $null: null;
-$string: "string value";
+$string: 'string value';
 $ms: 500ms;
 $sec: 10s;
 
@@ -40,13 +40,13 @@ in your JavaScript file (wherever you need the values from Sass), you can do thi
 
 ```js
 import styles from './style.scss';
-import vars from "!!sass-values-loader!./style.scss";
+import vars from '!!sass-values-loader!./style.scss';
 
 console.log(vars.bool) // true
-console.log(vars.color) // "rgba(255,0,0,1)"
+console.log(vars.color) // 'rgba(255,0,0,1)'
 console.log(vars.list) // [1,2,3]
 console.log(vars.number) // 1
-console.log(vars.string) // "string value"
+console.log(vars.string) // 'string value'
 console.log(vars.ms) // 500
 console.log(vars.sec) // 10
 
@@ -63,7 +63,7 @@ module.exports = {
 
 	resolveLoader: {
 		alias: {
-			'sass-js': "sass-values-loader",
+			'sass-js': 'sass-values-loader',
 		},
 	},
 
@@ -74,7 +74,7 @@ module.exports = {
 now you can use the plugin in your scripts like this:
 
 ```js
-import vars from "!!sass-js!./style.scss";
+import vars from '!!sass-js!./style.scss';
 ```
 
 ## Options
@@ -89,8 +89,8 @@ $some-time: 500ms,
 
 ```js
 import styles from './style.scss';
-import camelCasedVars from "!!sass-values-loader!./style.scss";
-import preservedVars from "!!sass-values-loader?preserveKeys=true!./style.scss";
+import camelCasedVars from '!!sass-values-loader!./style.scss';
+import preservedVars from '!!sass-values-loader?preserveKeys=true!./style.scss';
 
 console.log(camelCasedVars) // { someTime: 500 }
 console.log(preservedVars) // { 'some-time': 500 }
