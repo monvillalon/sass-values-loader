@@ -1,27 +1,24 @@
-## About
+# `sass-values-loader`
 
-**sass-values-loader** is an webpack loader that allows you share the values of your sass files with your javascript when using webpack
+`sass-values-loader` is a Webpack loader that allows you share the values of your Sass files with your javascript when using webpack.
 
 ## Installation
 
-```
+```sh
 npm install --save-dev sass-values-loader node-sass
 ```
 
 or if you use yarn
 
-```
+```sh
 yarn add --dev sass-values-loader node-sass
 ```
 
 as a peer dependency you need to install `node-sass` if you don't have it already
 
-## Setup & Usage
+## Setup & usage
 
-There is no webpack setup required, this loader should not
-be added as part of the sass pipeline. Instead it should be called explicitly when you want to gather the variables of a file
-
-Assuming you have a scss file like this, called `style.scss`
+Assuming you have a scss file like this, called `style.scss`:
 
 ```scss
 $bool: true;
@@ -37,10 +34,9 @@ $sec: 10s;
 .myclass {
   color: $color;
 }
-
 ```
 
-in your javascript file, you can do this:
+in your JavaScript file (wherever you need the values from Sass), you can do this:
 
 ```js
 import styles from './style.scss';
@@ -57,9 +53,33 @@ console.log(vars.sec) // 10
 console.log(styles.a) // The css modules classname
 ```
 
-### Options
+You should call this plugin explicitly when you want to gather the variables of a file instead of adding it to your Webpack config, so that you won't change how your stylesheets are loaded.
 
-`preserveKeys` (boolean, defaults to `false`)
+You can, however, clean up the syntax. First, add an alias in your Webpack config file:
+
+```js
+module.exports = {
+	// ...
+
+	resolveLoader: {
+		alias: {
+			'sass-js': "sass-values-loader",
+		},
+	},
+
+	// ...
+}
+```
+
+now you can use the plugin in your scripts like this:
+
+```js
+import vars from "!!sass-js!./style.scss";
+```
+
+## Options
+
+### `preserveKeys` (default `false`)
 
 Variable names are converted to camelCase by default, but can be preserved in their original format with this setting.
 
@@ -76,83 +96,34 @@ console.log(camelCasedVars) // { someTime: 500 }
 console.log(preservedVars) // { 'some-time': 500 }
 ```
 
-### Cleaner loader syntax
-
-To shorten the import or require statement you can add the following snippet to the root of your webpack configuration:
-
-```js
-	module.exports = {
-	
-     /* more config... */
-	
-	  resolveLoader: {
-	    alias: {
-	      vars: "sass-values-loader",
-	    },
-	  },
-  
-     /* more config... */
-  }
-```
-
-and then when you require variables use it like this:
-
-```
-import vars from "!!vars!./style.scss";
-```
-
 ## How it works
 
-The loader works in two phases.  
+The loader works in two phases.
 
-1. On the first phase the loader transforms the
-   the original sass file, using [scss-parser](https://www.npmjs.com/package/scss-parser) and [query-ast](https://www.npmjs.com/package/query-ast) to pass the values thru
-   an export function. Such that this file:
-   
-   ```scss
-   $my_var: 20 + 10;
-   ```
-   
-   becomes
-   
-	```scss
-   $my_var: export_var(20 + 10);
-   ```
-   
-   this is done at ast, level meaning that the full of the
-   sass syntax should be supported
-   
-2. As a second step the files is fed thru [node-sass](https://github.com/sass/node-sass) while registering the custom `export_var` function.  In the compilation process node-sass will call the function with the resolved value and we can capture it then.
-	This way sass can do the resolution to the values,
-	even if they are computed or if they depend on defined 	variables on imported files, just like sass would.
+1. Transform the original Sass file (using [scss-parser](https://www.npmjs.com/package/scss-parser) and [query-ast](https://www.npmjs.com/package/query-ast)), so that this:
 
-## Similar Projects
-	
-The are several projects that have tackled the problem, but all of them didn't serve the problems I was trying to solve for several reasons.
+```scss
+$my_var: 20 + 10;
+```
 
-1. Most of them used regular expressions and didn't account, for the full range of the sass syntax
+becomes this:
 
-2. Some didn't seem to be working with webpack2
+```scss
+$my_var: export_var(20 + 10);
+```
 
-3. Some didn't have support for lists, maps or the whole of the different types and units that sass offers
+This is done as the last step, so all the full Sass syntax should be supported.
 
-4. Some just plainly didn't work
+2. The Sass code is fed through [node-sass](https://github.com/sass/node-sass), while registering the custom `export_var` function. During compilation `node-sass` will call the function with the resolved value and we can capture it then.
 
-5. Some didn't try to resolve when variables used in the file were computed from other files up the chain.
+This way Sass does the resolution of the final values, even if they are computed via functions or if they depend on imported files.
 
-Here is a list of some projects I've found, this may work for you depending on your needs and I thank them as they were indispensable in trying to find ways to solve the problem.
-	
-1. [https://github.com/buildo/sass-variables-loader](https://github.com/buildo/sass-variables-loader)
+## Common issues with similar libraries
 
-2. [https://github.com/hankmccoy/sass-to-js-var-loader](https://github.com/hankmccoy/sass-to-js-var-loader)
+Other projects attempting to let you export variable values from Sass to JS suffer from some or all of the following problems.
 
-3. [https://github.com/nothinggift/mk-sass-variables-loader](https://github.com/nothinggift/mk-sass-variables-loader)
-
-4. [https://github.com/nordnet/sass-variable-loader](https://github.com/nordnet/sass-variable-loader)
-
-	
-
-
-
-
-
+1. Using regexp to read Sass line-by-line, so that the Sass syntax is not actually parsed
+2. Not working with Webpack 2.
+3. Not supporting lists, maps, multi-line values or @imports
+4. Not supporting the full range different types and units that Sass offers
+5. Not resolving the final computed values of variables used in the file
