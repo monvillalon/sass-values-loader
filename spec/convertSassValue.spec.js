@@ -75,11 +75,16 @@ describe('number', () => {
 		)).toBe(10)
 	})
 
-	// FIXME: this should expect 10000
 	test('s becomes number', () => {
+		expect(typeof convertSassValue(
+			new sass.types.Number(1, 's')
+		)).toBe('number')
+	})
+
+	test('s becomes milliseconds', () => {
 		expect(convertSassValue(
-			new sass.types.Number(10, 's')
-		)).toBe(10)
+			new sass.types.Number(1, 's')
+		)).toBe(1000)
 	})
 
 })

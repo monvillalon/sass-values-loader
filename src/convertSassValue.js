@@ -4,6 +4,12 @@ const sass = require('node-sass')
 
 // Standardise number
 function convertNumberValue (v) {
+
+	// Always return milliseconds
+	if (v.getUnit() === 's') {
+		return (v.getValue() * 1000)
+	}
+
 	return v.getValue()
 }
 
