@@ -1,50 +1,63 @@
-const loaderUtils = require("loader-utils");
-const SassVariablesExtract = require("./extract.js")
+const camelCase = require('lodash.camelcase')
+const mapKeys = require('lodash.mapkeys')
+const loaderUtils = require('loader-utils')
 const forEach = require('lodash.foreach')
 
-module.exports = function(content) {
-  const self = this;
-  const options = loaderUtils.getOptions(self);
-  const callback = this.async();
-  const version = this.version || 1;
-  const path = this.resourcePath;
+const SassVariablesExtract = require('./src/extract.js')
 
-  this.cacheable && this.cacheable();
+module.exports = function (content) {
+	const self = this
+	const callback = this.async()
+	const version = this.version || 1
 
-  try {
+	const options = loaderUtils.getOptions(self)
+	const preserveKeys = options && options.preserveKeys ? true : false
 
-    SassVariablesExtract(this.resourcePath, content).then((result) => {
-      const dependencies = result.dependencies;
-      const variables = result.variables;
-      const defaultExport = JSON.stringify(variables)
-                       .replace(/\u2028/g, '\\u2028')
-                       .replace(/\u2029/g, '\\u2029');
+	this.cacheable && this.cacheable()
 
-      // Create Module
-      let module = ''
-      if (version >= 2) {
-        forEach(variables, function (value, name) {
-          const constExport = JSON.stringify(value)
-                           .replace(/\u2028/g, '\\u2028')
-                           .replace(/\u2029/g, '\\u2029');
-          module += `export var ${name} = ${constExport}\n`;
-        })
-        module += `export default ${defaultExport}\n`
-      } else {
-        module = `module.exports = ${defaultExport}\n`
-      }
+	try {
 
-      dependencies.forEach((dependency) => {
-        self.addDependency(dependency);
-      })
+		const generateJson = (value) => {
+			return JSON.stringify(value)
+				.replace(/\u2028/g, '\\u2028')
+				.replace(/\u2029/g, '\\u2029')
+		}
 
-      callback(null, module);
-    })
-    .catch((error) => {
-      callback(error);
-    })
+		const mapKeyCallback = (value, key) => {
+			if (preserveKeys) {
+				return key
+			}
+			return camelCase(key)
+		}
 
-  } catch(error) {
-    callback(error);
-  }
+		SassVariablesExtract(this.resourcePath, content)
+			.then((result) => {
+				const dependencies = result.dependencies
+				const variables = mapKeys(result.variables, mapKeyCallback)
+				const defaultExport = generateJson(variables)
+
+				// Create Module
+				let module = ''
+				if (version >= 2) {
+					forEach(variables, function (value, name) {
+						module += `export var ${camelCase(name)} = ${generateJson(value)}\n`
+					})
+					module += `export default ${defaultExport}\n`
+				} else {
+					module = `module.exports = ${defaultExport}\n`
+				}
+
+				dependencies.forEach((dependency) => {
+					self.addDependency(dependency)
+				})
+
+				callback(null, module)
+			})
+			.catch((error) => {
+				callback(error)
+			})
+
+	} catch (error) {
+		callback(error)
+	}
 }

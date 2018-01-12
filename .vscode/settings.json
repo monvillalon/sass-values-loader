@@ -1,0 +1,14 @@
+{
+	"eslint.enable": true,
+	"eslint.options": {
+		"extensions": [
+			".js"
+		]
+	},
+	"eslint.validate": [
+		{
+			"language": "javascript",
+			"autoFix": true
+		}
+	]
+}
